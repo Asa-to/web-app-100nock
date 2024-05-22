@@ -17,7 +17,7 @@ function getLocalData(key) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const addButton = document.querySelector('button[type="submit"]');
+  const addButton = document.querySelector("#todoAdd");
   const todoList = document.querySelector(".todoList");
   const newTodoInput = document.querySelector('input[name="newTodo"]');
   const localData = getLocalData("todos");
@@ -45,9 +45,32 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+const classlessCss = {
+  newcss: "https://cdn.jsdelivr.net/npm/@exampledev/new.css@1/new.min.css",
+  mvpcss: "https://unpkg.com/mvp.css",
+  picocss: "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
+  holidayCss: "https://cdn.jsdelivr.net/npm/holiday.css@0.11.2",
+};
+
+const addStyleHead = (href) => {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = "https://cdn.jsdelivr.net/npm/@exampledev/new.css@1/new.min.css";
+  link.href = href;
   document.head.appendChild(link);
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+  const cssButton = document.querySelector("#cssApply");
+  const styleSelect = document.querySelector("#styles");
+  cssButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    const option = styleSelect.options[styleSelect.selectedIndex]?.value;
+    addStyleHead(classlessCss[option]);
+    localStorage.setItem("style", option);
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const css = getLocalData("style");
+  addStyleHead(classlessCss?.[css]);
 });

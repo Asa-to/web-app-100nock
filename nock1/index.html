@@ -10,6 +10,16 @@
 </head>
 
 <body>
+  <form>
+    <label for="styles">適応するスタイルを選んでね</label>
+    <select name="styles" id="styles">
+      <option value="newcss">new.css</option>
+      <option value="mvpcss">MVP.css</option>
+      <option value="picocss">Pico.css</option>
+      <option value="holidayCss">holiday.css</option>
+    </select>
+    <button type="submit" id="cssApply">適応</button>
+  </form>
   <ul class="todoList"></ul>
   <form>
     <div class="form">
@@ -17,13 +27,8 @@
         <label for="newTodo">新しいTODO</label>
         <input type="text" placeholder="TODOを入れる" name='newTodo'></input>
       </div>
-      <button type="submit">追加</button>
+      <button type="submit" id="todoAdd">追加</button>
     </div>
-  </form>
-  <form>
-    <label for="styles">適応するスタイルを選んでね</label>
-    <select name="styles"></select>
-    <button type="submit">適応</button>
   </form>
 </body>
 
