@@ -8,19 +8,11 @@ function createTodoListItem(todo, onclick) {
   return listItem;
 }
 
-function getLocalData(key) {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   const addButton = document.querySelector("#todoAdd");
   const todoList = document.querySelector(".todoList");
   const newTodoInput = document.querySelector('input[name="newTodo"]');
-  const localData = getLocalData("todos");
+  const localData = localStorage.getItem("todos");
   const todos = localData ? JSON.parse(localData) : [];
   todos.forEach(function (todo) {
     todoList.appendChild(createTodoListItem(todo));
@@ -53,7 +45,9 @@ const classlessCss = {
 };
 
 const addStyleHead = (href) => {
+  document.querySelector("#cssHead")?.remove();
   const link = document.createElement("link");
+  link.id = "cssHead";
   link.rel = "stylesheet";
   link.href = href;
   document.head.appendChild(link);
@@ -61,16 +55,23 @@ const addStyleHead = (href) => {
 
 document.addEventListener("DOMContentLoaded", function () {
   const cssButton = document.querySelector("#cssApply");
-  const styleSelect = document.querySelector("#styles");
+  const cssSelector = document.querySelector("#css");
   cssButton.addEventListener("click", function (event) {
     event.preventDefault();
-    const option = styleSelect.options[styleSelect.selectedIndex]?.value;
+    const option = cssSelector.options[cssSelector.selectedIndex]?.value;
     addStyleHead(classlessCss[option]);
-    localStorage.setItem("style", option);
+    localStorage.setItem("css", option);
   });
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const css = getLocalData("style");
+  const css = localStorage.getItem("css");
+  const cssSelector = document.querySelector("#css");
+  if (css) {
+    const csss = Object.keys(classlessCss);
+    cssSelector.selectedIndex = csss.findIndex((v) => v === css);
+  }
   addStyleHead(classlessCss?.[css]);
 });
+
+document.addEventListener("DOMContentLoaded", function () {});
