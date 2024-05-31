@@ -1,37 +1,65 @@
-function createTodoListItem(todo, onclick) {
+const todoList = [];
+
+function getNewTodoId() {
+  if (todoList.length === 0) {
+    return 1;
+  }
+
+  return todoList.slice(-1)[0]?.id + 1;
+}
+
+function createTodoListItem(todo) {
   const listItem = document.createElement("li");
+  listItem.id = `todo${todo.id}`;
+  listItem.className = "todo";
   const deleteButton = document.createElement("button");
-  listItem.textContent = todo;
+  listItem.textContent = todo.title;
   deleteButton.textContent = "削除";
+  function onclick() {
+    todoList.splice(
+      todoList.findIndex((item) => item.id === todo.id),
+      1
+    );
+    updateTodoDom();
+  }
   deleteButton.onclick = onclick;
   listItem.appendChild(deleteButton);
   return listItem;
 }
 
+function updateTodoDom() {
+  const todoListDom = document.querySelector(".todoList");
+  const todoDoms = document.querySelectorAll(".todo");
+  // 不要なDOMを削除
+  todoDoms.forEach((todoDom) => {
+    if (!todoList.find((todo) => todo.id === todoDom.id.slice(4))) {
+      todoDom.remove();
+    }
+  });
+  // 足りないDOMを追加
+  todoList.forEach((item) => {
+    if (!document.querySelector(`#todo${item.id}`)) {
+      todoListDom.appendChild(createTodoListItem(item));
+    }
+  });
+  // DOMの状態をlocalStorageに反映
+  localStorage.setItem("todos", JSON.stringify(todoList));
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const addButton = document.querySelector("#todoAdd");
-  const todoList = document.querySelector(".todoList");
   const newTodoInput = document.querySelector('input[name="newTodo"]');
   const localData = localStorage.getItem("todos");
-  const todos = localData ? JSON.parse(localData) : [];
-  todos.forEach(function (todo) {
-    todoList.appendChild(createTodoListItem(todo));
-  });
+  todoList.push(...(localData ? JSON.parse(localData) : []));
+  updateTodoDom();
 
+  // todo追加ボタンにロジックを設定
   addButton.addEventListener("click", function (event) {
     event.preventDefault();
     const newTodo = newTodoInput.value.trim();
     if (newTodo) {
-      const todoListItem = createTodoListItem(newTodo, function (item) {
-        todoList.removeChild(item);
-        localStorage.setItem(
-          "todos",
-          JSON.stringify(todos.filter((item) => item !== newTodo))
-        );
-      });
-      todoList.appendChild(todoListItem);
-      todos.push(newTodo);
-      localStorage.setItem("todos", JSON.stringify(todos));
+      todoList.push({ title: newTodo, id: getNewTodoId() });
+      updateTodoDom();
       newTodoInput.value = "";
     }
   });
@@ -73,5 +101,3 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   addStyleHead(classlessCss?.[css]);
 });
-
-document.addEventListener("DOMContentLoaded", function () {});
