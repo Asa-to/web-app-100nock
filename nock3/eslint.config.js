@@ -1,0 +1,18 @@
+import globals from "globals";
+import pluginJs from "@eslint/js";
+import tseslint  from "typescript-eslint";
+import eslintPluginAstro from 'eslint-plugin-astro'
+import astroPerser from 'astro-eslint-parser';
+
+
+export default [
+  {
+    languageOptions: {
+      globals: globals.browser,
+      parser: astroPerser
+    }
+  },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...eslintPluginAstro.configs.recommended,
+];
