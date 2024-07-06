@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { DrizzleD1Database, drizzle } from "drizzle-orm/d1";
+import { useEffect, useState } from "react";
 
 export const TravelList = () => {
   const [travels, setTravels] = useState([

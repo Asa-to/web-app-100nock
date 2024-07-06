@@ -2,13 +2,16 @@ import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 import { handle } from "hono/vercel";
 import { NextResponse } from "next/server";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 const app = new Hono();
+
+const { env } = getRequestContext<{ BASIC_USER: string }>();
 
 app.use(
   "*",
   basicAuth({
-    username: process.env.BASIC_USER as string,
+    username: env.BASIC_USER,
     password: "",
   })
 );
