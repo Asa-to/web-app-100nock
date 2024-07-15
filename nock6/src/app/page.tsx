@@ -1,8 +1,29 @@
+import { getRequestContext } from "@cloudflare/next-on-pages";
+import { hc } from "hono/client";
+import { Suspense } from "react";
+import { AppType } from "src/app/api/[[...route]]/route";
 import { TravelList } from "src/features/TravelList";
+import { btoaForUTF8 } from "src/utils/btoaForUTF8";
 
 const serverActin = async (formData: FormData) => {
   "use server";
-  console.log(formData.get("title"));
+  const { env } = getRequestContext<{ BASIC_USER: string }>();
+  const title = formData.get("title")?.toString();
+  const start = formData.get("start")?.toString();
+  const end = formData.get("end")?.toString();
+  // server Actionにはヘッダー情報が引き継がれないため
+  const basicUser = await btoaForUTF8(env.BASIC_USER + ":");
+  if (title && start && end) {
+    const client = hc<AppType>("http://localhost:8788");
+    await client.api.add.$post(
+      { form: { title, start, end } },
+      {
+        headers: {
+          Authorization: `Basic ${basicUser}`,
+        },
+      }
+    );
+  }
 };
 
 export default function Home() {
@@ -12,7 +33,9 @@ export default function Home() {
       <h2>旅行選択</h2>
       <div>
         <p>確認・編集したい旅行を選択してください！</p>
-        <TravelList />
+        <Suspense fallback={<>loading...</>}>
+          <TravelList />
+        </Suspense>
       </div>
       <div className="">
         <h2>旅行の新規作成</h2>

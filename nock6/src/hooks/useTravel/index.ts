@@ -1,8 +1,31 @@
-import { DrizzleD1Database } from "drizzle-orm/d1";
-import { Hono } from "hono";
+"use client";
 
-type Bindings = {
-  DB: DrizzleD1Database;
+import { hc } from "hono/client";
+import { use, useState } from "react";
+import { AppType } from "src/app/api/[[...route]]/route";
+
+export const useTravels = () => {
+  const client = hc<AppType>("http://localhost:8788");
+
+  const [travels, setTravels] = useState<
+    {
+      id: string;
+      title: string;
+      start: string;
+      end: string;
+      tasks: string;
+    }[]
+  >([]);
+
+  const doing = async () => {
+    const res = await client.api.travels.$get();
+    return res.json();
+  };
+
+  const data = use(doing());
+  setTravels(data);
+
+  return {
+    travels,
+  };
 };
-
-const app = new Hono<{ Bindings: Bindings }>();

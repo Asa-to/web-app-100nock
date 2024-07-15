@@ -17,7 +17,7 @@ app.use(
 );
 
 app.all("*", (c) => {
-  return NextResponse.next();
+  return NextResponse.next({ request: c.req.raw });
 });
 
 export const middleware = handle(app);

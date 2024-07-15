@@ -1,18 +1,17 @@
 "use client";
 
-import { DrizzleD1Database, drizzle } from "drizzle-orm/d1";
-import { useEffect, useState } from "react";
+import { hc } from "hono/client";
+import { use } from "react";
+import { AppType } from "src/app/api/[[...route]]/route";
 
 export const TravelList = () => {
-  const [travels, setTravels] = useState([
-    {
-      id: "1",
-      title: "テスト旅",
-      dos: ["1", "2"],
-      start: new Date().toISOString(),
-      end: new Date().toISOString(),
-    },
-  ]);
+  const travels = use(
+    (async () => {
+      const client = hc<AppType>("http://localhost:8788");
+      const res = await client.api.travels.$get();
+      return res.json();
+    })()
+  );
 
   return (
     <ul>

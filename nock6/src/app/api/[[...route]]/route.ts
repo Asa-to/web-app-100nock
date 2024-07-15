@@ -3,10 +3,19 @@ import { DrizzleD1Database, drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { travels } from "src/schema";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { v7 as uuid } from "uuid";
 
 type Bindings = {
   DB: DrizzleD1Database;
 };
+
+const addSchema = z.object({
+  title: z.string(),
+  start: z.string(),
+  end: z.string(),
+});
 
 const app = new Hono<{ Bindings: Bindings }>().basePath("/api");
 
@@ -18,20 +27,17 @@ const route = app
 
     return c.json(result);
   })
-  .post("add", async (c) => {
+  .post("/add", zValidator("form", addSchema), async (c) => {
     const { env } = getRequestContext();
     const db = drizzle(env.DB);
+    const formData = c.req.valid("form");
+    const id = uuid();
     const result = await db.insert(travels).values({
-      id: "test",
-      title: "test",
-      start: new Date().toISOString(),
-      end: new Date().toISOString(),
+      id,
+      ...formData,
     });
 
-    return c.json(result);
-  })
-  .get("/check", (c) => {
-    return c.text("Hello Hono！");
+    return c.json(result, 200);
   });
 
 export type AppType = typeof route;
