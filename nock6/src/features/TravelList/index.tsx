@@ -1,15 +1,25 @@
-"use client";
-
+import { getRequestContext } from "@cloudflare/next-on-pages";
 import { hc } from "hono/client";
 import { use } from "react";
 import { AppType } from "src/app/api/[[...route]]/route";
+import { btoaForUTF8 } from "src/utils/btoaForUTF8";
 
 export const TravelList = () => {
+  const { env } = getRequestContext<{ BASIC_USER: string }>();
   const travels = use(
     (async () => {
-      const client = hc<AppType>("http://localhost:8788");
+      const basicUser = await btoaForUTF8(env.BASIC_USER + ":");
+      const client = hc<AppType>(env.BASE_URL ?? "http://localhost:8788", {
+        headers: {
+          Authorization: `Basic ${basicUser}`,
+        },
+      });
       const res = await client.api.travels.$get();
-      return res.json();
+
+      if (res.ok) {
+        return res.json();
+      }
+      return [];
     })()
   );
 

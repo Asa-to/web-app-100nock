@@ -14,7 +14,7 @@ const serverActin = async (formData: FormData) => {
   // server Actionにはヘッダー情報が引き継がれないため
   const basicUser = await btoaForUTF8(env.BASIC_USER + ":");
   if (title && start && end) {
-    const client = hc<AppType>("http://localhost:8788");
+    const client = hc<AppType>(env.BASE_URL ?? "http://localhost:8788");
     await client.api.add.$post(
       { form: { title, start, end } },
       {
